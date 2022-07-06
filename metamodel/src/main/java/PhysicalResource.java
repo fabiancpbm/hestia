@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class PhysicalResource {
     private int id;
     private String name;

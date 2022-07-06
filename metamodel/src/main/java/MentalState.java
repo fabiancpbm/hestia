@@ -1,3 +1,5 @@
+import java.util.List;
+
 public class MentalState {
     private int id;
     private List<Belief> initialBeliefs;
