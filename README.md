@@ -5,25 +5,32 @@
 ```
 "Hestia is the goddess of the home, hearth and architecture in Greek mythology. 
 
-She was the first child of the Titans Cronus and Rhea and the sister of Poseidon, Zeus, Hera, Demeter and Hades.  T
+She was the first child of the Titans Cronus and Rhea and the sister of Poseidon, Zeus, Hera, Demeter and Hades.  
 
-he word “hestia” meant “hearth” or “beside the hearth” in Ancient Greek language." 
+The word “hestia” meant “hearth” or “beside the hearth” in Ancient Greek language." 
 ```
 [Mythologian.net](https://mythologian.net/hestia-the-goddess-of-the-home-hearth-and-architecture/)
 
 ## What is Hestia
 
+Hestia is a modeling language for Embedded Multi-Agent System (MAS). 
+
 ## Objective
+
+The main objective of this language is to standardize the way of representing a Embedded MAS.
 
 ## The Modeling Language
 
 ### Metamodel
 
 #### Multi-Agent Metamodel
+![Multi-Agent Metamodel](/img/multi-agent-metamodel.png)
 
 #### Structural Metamodel
+![Structural Metamodel](/img/structural-metamodel.png)
 
 #### Behavioural Metamodel
+![Behavioural Metamodel](/img/behavioural-metamodel.png)
 
 ### Modeling language symbols
 
