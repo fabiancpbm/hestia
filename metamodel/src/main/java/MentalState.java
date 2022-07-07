@@ -4,6 +4,14 @@ public class MentalState {
     private int id;
     private List<Belief> initialBeliefs;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public List<Belief> getInitialBeliefs() {
         return initialBeliefs;
     }
@@ -12,5 +20,4 @@ public class MentalState {
         this.initialBeliefs = initialBeliefs;
     }
 
-    private List<AgentGoal> initialGoals;
 }
