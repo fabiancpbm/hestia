@@ -3,6 +3,15 @@ public class Topic extends Function {
     private String initialValue;
     private FacetDefinition facetDefinition;
 
+    public Topic() {
+
+    }
+
+    public Topic(int id, String name, String description, String dataType) {
+        super(id, name, description);
+        this.dataType = dataType;
+    }
+
     public String getDataType() {
         return dataType;
     }

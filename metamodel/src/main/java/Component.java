@@ -7,6 +7,12 @@ public class Component {
     private List<Function> functions;
     private List<Pin> pins;
 
+    public Component(int id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
     public int getId() {
         return id;
     }
