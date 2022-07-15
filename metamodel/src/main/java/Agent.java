@@ -8,6 +8,12 @@ public class Agent {
     private List<Resource> resourcesInUse;
     private List<Plan> plans;
 
+    public Agent(int id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
     public int getId() {
         return id;
     }

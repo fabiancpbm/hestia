@@ -1,7 +1,7 @@
 import java.util.List;
 import java.util.Map;
 
-public class Computer {
+public class Platfotm {
     private int id;
     private String name;
     private String description;
@@ -9,7 +9,7 @@ public class Computer {
     private List<PhysicalResource> physicalResources;
     private Map<String, Microcontroller> portMicrocontrollerMap;
 
-    public Computer(int id, String name, String description) {
+    public Platfotm(int id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;

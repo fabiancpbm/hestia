@@ -1,5 +1,4 @@
 public class Topic extends Function {
-    private String dataType;
     private String initialValue;
     private FacetDefinition facetDefinition;
 
@@ -8,16 +7,7 @@ public class Topic extends Function {
     }
 
     public Topic(int id, String name, String description, String dataType) {
-        super(id, name, description);
-        this.dataType = dataType;
-    }
-
-    public String getDataType() {
-        return dataType;
-    }
-
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+        super(id, name, description, dataType);
     }
 
     public String getInitialValue() {

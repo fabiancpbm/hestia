@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class GardenSimpleAgent {
     public static void main(String[] args) {
-        Computer computer = new Computer(++idGenerator, "raspberryPiZero", "Raspberry Pi zero 8GB 256GB.");
+        Platfotm platfotm = new Platfotm(++idGenerator, "raspberryPiZero", "Raspberry Pi zero 8GB 256GB.");
 
         // Structural metamodel
         PhysicalResource sprinkler = createSprinkler();
@@ -20,18 +20,17 @@ public class GardenSimpleAgent {
         physicalResources.add(phSensor);
         physicalResources.add(moisturePhSensor);
         physicalResources.add(luminositySensor);
-        computer.setPhysicalResources(physicalResources);
+        platfotm.setPhysicalResources(physicalResources);
 
         Microcontroller microcontroller = new Microcontroller();
         Map<String, Microcontroller> microcontrollerMap = new HashMap<>();
         microcontrollerMap.put("/dev/ttyS0", microcontroller);
-        computer.setPortMicrocontrollerMap(microcontrollerMap);
+        platfotm.setPortMicrocontrollerMap(microcontrollerMap);
 
         // Multi-Agent metamodel
-        MASSystem masSystem = new MASSystem();
-        computer.setMasSystem(masSystem);
+        MASSystem masSystem = createMAS(sprinkler, temperatureSensor, phSensor, moisturePhSensor, luminositySensor);
+        platfotm.setMasSystem(masSystem);
 
-        System.out.println();
         // Behavioural metamodel
         Function onFn;
         Function offFn;
@@ -205,5 +204,143 @@ public class GardenSimpleAgent {
         luminositySensor.setComponents(components);
 
         return luminositySensor;
+    }
+
+    private static MASSystem createMAS(PhysicalResource sprinkler, PhysicalResource temperatureSensor, PhysicalResource phSensor, PhysicalResource moisturePhSensor, PhysicalResource luminositySensor) {
+        MASSystem masSystem = new MASSystem(++idGenerator, "garden_mas", "The garden MAS.");
+
+        Environment environment = new Environment(++idGenerator, "garden", "The garden environment.");
+        masSystem.setEnvironment(environment);
+
+        // Resources
+        List<Resource> resources = createResources(sprinkler, temperatureSensor, phSensor, moisturePhSensor, luminositySensor);
+        environment.setResources(resources);
+
+        // FacetDefinitions
+        List<FacetDefinition> facetDefinitions = createFacetDefinitions(sprinkler, temperatureSensor, phSensor, moisturePhSensor, luminositySensor);
+        environment.setFacets(facetDefinitions);
+
+        // Agents
+        List<Agent> agents = new ArrayList<>();
+        Agent mediatorAgent = new Agent(++idGenerator, "mediator", "The mediator agent.");
+        agents.add(mediatorAgent);
+        Agent physicalAgent = createPhysicalAgent(mediatorAgent);
+        agents.add(physicalAgent);
+        environment.setAgents(agents);
+        return masSystem;
+    }
+
+    private static Agent createPhysicalAgent(Agent mediator) {
+        Agent physicalAgent = new Agent(++idGenerator, "physical_agent", "The agent responsible to interact with the environment.");
+
+        MentalState mentalState = new MentalState(++idGenerator);
+        List<Belief> initialBeliefs = new ArrayList<>();
+        mentalState.setInitialBeliefs(initialBeliefs);
+        List<AgentGoal> initialGoals = new ArrayList<>();
+        mentalState.setInitialGoals(initialGoals);
+        physicalAgent.setInitialState(mentalState);
+
+        List<Plan> plans = new ArrayList<>();
+        Plan start = new Plan(++idGenerator, "start", "");
+        start.setSuccessCondition("true");
+        int order = 0;
+        List<Action> startActions = new ArrayList<>();
+        startActions.add(new Action(++idGenerator, "percepts", "", order, "open"));
+        start.setActions(startActions);
+        plans.add(start);
+
+        Plan temperature = new Plan(++idGenerator, "temperature(T)", "");
+        temperature.setSuccessCondition("");
+        order = 0;
+        List<Action> temperatureActions = new ArrayList<>();
+        temperatureActions.add(new Action(++idGenerator, "percepts", "", order++, "block"));
+        temperatureActions.add(new MessageAction(++idGenerator, "sendTemperature", "", mediator, order++, "tell", "temperature"));
+        temperatureActions.add(new Action(++idGenerator, "percepts", "", order, "open"));
+        temperature.setActions(temperatureActions);
+        plans.add(temperature);
+
+        Plan on = new Plan(++idGenerator, "on", "");
+        on.setSuccessCondition("true");
+        List<Action> onActions = new ArrayList<>();
+        order = 0;
+        onActions.add(new Action(++idGenerator, "print", "", order++, "Turning the irrigator on."));
+        onActions.add(new FacetAction(++idGenerator, "on", "", order));
+        on.setActions(onActions);
+        plans.add(on);
+
+        Plan off = new Plan(++idGenerator, "off", "");
+        off.setSuccessCondition("true");
+        List<Action> offActions = new ArrayList<>();
+        order = 0;
+        offActions.add(new Action(++idGenerator, "print", "", order++, "Turning the irrigator off."));
+        offActions.add(new Action(++idGenerator, "off", "", order));
+        off.setActions(offActions);
+        plans.add(off);
+        physicalAgent.setPlans(plans);
+        return physicalAgent;
+    }
+
+    private static List<Resource> createResources(PhysicalResource sprinkler, PhysicalResource temperatureSensor, PhysicalResource phSensor, PhysicalResource moisturePhSensor, PhysicalResource luminositySensor) {
+        List<Resource> resources = new ArrayList<>();
+        resources.add(createResourceByPhysicalResource(sprinkler));
+        resources.add(createResourceByPhysicalResource(temperatureSensor));
+        resources.add(createResourceByPhysicalResource(phSensor));
+        resources.add(createResourceByPhysicalResource(moisturePhSensor));
+        resources.add(createResourceByPhysicalResource(luminositySensor));
+        return resources;
+    }
+
+    private static Resource createResourceByPhysicalResource(PhysicalResource physicalResource) {
+        Resource resource = new Resource(++idGenerator, physicalResource.getName(), physicalResource.getDescription());
+        physicalResource.setResource(resource);
+        return resource;
+    }
+
+    private static List<FacetDefinition> createFacetDefinitions(PhysicalResource sprinkler, PhysicalResource temperatureSensor, PhysicalResource phSensor, PhysicalResource moisturePhSensor, PhysicalResource luminositySensor) {
+        Function onCommand = getFunctionByResourceName(sprinkler, "on");
+        Function offCommand = getFunctionByResourceName(sprinkler, "off");
+        Function status = getFunctionByResourceName(sprinkler, "status");
+        Function valueInCelsius = getFunctionByResourceName(temperatureSensor, "valueInCelsius");
+        Function valueInPh = getFunctionByResourceName(phSensor, "valueInPh");
+        Function valueInKgPerM3 = getFunctionByResourceName(moisturePhSensor, "valueInKgPerM3");
+        Function luminosityStatus = getFunctionByResourceName(luminositySensor, "status");
+
+        List<FacetDefinition> facetDefinitions = new ArrayList<>();
+        facetDefinitions.add(createFacetDefinitionByFunction(onCommand));
+        facetDefinitions.add(createFacetDefinitionByFunction(offCommand));
+        facetDefinitions.add(createFacetDefinitionByFunction(status));
+        facetDefinitions.add(createFacetDefinitionByFunction(valueInCelsius));
+        facetDefinitions.add(createFacetDefinitionByFunction(valueInPh));
+        facetDefinitions.add(createFacetDefinitionByFunction(valueInKgPerM3));
+        facetDefinitions.add(createFacetDefinitionByFunction(luminosityStatus));
+        return facetDefinitions;
+    }
+
+    private static FacetDefinition createFacetDefinitionByFunction(Function function) {
+        FacetDefinition facetDefinition = new FacetDefinition(++idGenerator, function.getName(), function.getDataType());
+        if (function instanceof Command) {
+            ((Command) function).setFacetDefinition(facetDefinition);
+            facetDefinition.setCanBeChanged(true);
+            facetDefinition.setCanBeSensed(true);
+            facetDefinition.setCanChange(true);
+        } else if (function instanceof Topic) {
+            ((Topic) function).setFacetDefinition(facetDefinition);
+            facetDefinition.setCanBeChanged(true);
+            facetDefinition.setCanBeSensed(true);
+            facetDefinition.setCanChange(false);
+        }
+        facetDefinition.setInitialValue("");
+        return facetDefinition;
+    }
+
+    private static Function getFunctionByResourceName(PhysicalResource physicalResource, String functionName) {
+        List<Function> functions = new ArrayList<>();
+        if (physicalResource.getCommands() != null) {
+            functions.addAll(physicalResource.getCommands());
+        }
+        if (physicalResource.getTopics() != null) {
+            functions.addAll(physicalResource.getTopics());
+        }
+        return functions.stream().filter(function -> function.getName().equals(functionName)).findFirst().orElse(null);
     }
 }

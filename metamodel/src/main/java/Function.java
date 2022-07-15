@@ -8,6 +8,8 @@ public class Function {
 
     protected String description;
 
+    protected String dataType;
+
     protected List<Block> blocks;
 
     protected List<Parameter> parameters;
@@ -20,6 +22,13 @@ public class Function {
         this.id = id;
         this.name = name;
         this.description = description;
+    }
+
+    public Function(int id, String name, String description, String dataType) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.dataType = dataType;
     }
 
     public int getId() {
@@ -44,6 +53,14 @@ public class Function {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
     public List<Block> getBlocks() {
