@@ -1,8 +1,9 @@
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Action {
+
+    private static final ActionSchema DEFAULT_ACTION_SCHEMA = new ActionSchema("defaultAction", "actionName;[params]");
 
     protected int id;
 
@@ -10,22 +11,31 @@ public class Action {
 
     protected String description;
 
+    private ActionSchema actionSchema;
+
     protected List<String> params;
+
     protected int order;
 
-    public Action(int id, String name, String description, int order) {
+    public Action(int id, String name, String description, int order, ActionSchema actionSchema) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.order = order;
+        this.actionSchema = actionSchema;
+    }
+
+    public Action(int id, String name, String description, int order, ActionSchema actionSchema, String... params) {
+        this(id, name, description, order, actionSchema);
+        this.params = Arrays.asList(params);
+    }
+
+    public Action(int id, String name, String description, int order) {
+        this(id, name, description, order, DEFAULT_ACTION_SCHEMA);
     }
 
     public Action(int id, String name, String description, int order, String... params) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.order = order;
-        this.params = Arrays.asList(params);
+        this(id, name, description, order, DEFAULT_ACTION_SCHEMA, params);
     }
 
     public int getId() {
@@ -60,4 +70,19 @@ public class Action {
         this.order = order;
     }
 
+    public ActionSchema getActionSchema() {
+        return actionSchema;
+    }
+
+    public void setActionSchema(ActionSchema actionSchema) {
+        this.actionSchema = actionSchema;
+    }
+
+    public List<String> getParams() {
+        return params;
+    }
+
+    public void setParams(List<String> params) {
+        this.params = params;
+    }
 }

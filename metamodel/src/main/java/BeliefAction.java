@@ -1,9 +1,9 @@
 public class BeliefAction extends Action {
-    public BeliefAction(int id, String name, String description, int order) {
-        super(id, name, description, order);
-    }
 
-    public BeliefAction(int id, String name, String description, int order, String... params) {
-        super(id, name, description, order, params);
+    private static final ActionSchema ACTION_SCHEMA = new ActionSchema("beliefAction", "operation;proposition");
+
+    public BeliefAction(int id, String name, String description, int order, String operation, String proposition) {
+        super(id, name, description, order, ACTION_SCHEMA, operation, proposition);
+
     }
 }

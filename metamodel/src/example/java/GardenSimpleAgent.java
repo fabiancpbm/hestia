@@ -1,3 +1,6 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +33,10 @@ public class GardenSimpleAgent {
         // Multi-Agent metamodel
         MASSystem masSystem = createMAS(sprinkler, temperatureSensor, phSensor, moisturePhSensor, luminositySensor);
         platfotm.setMasSystem(masSystem);
+
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").create();
+        String s = gson.toJson(platfotm);
+        System.out.println(s);
 
         // Behavioural metamodel
         Function onFn;
@@ -222,17 +229,22 @@ public class GardenSimpleAgent {
 
         // Agents
         List<Agent> agents = new ArrayList<>();
-        Agent mediatorAgent = new Agent(++idGenerator, "mediator", "The mediator agent.");
-        agents.add(mediatorAgent);
-        Agent physicalAgent = createPhysicalAgent(mediatorAgent);
+        Agent physicalAgent = new Agent(++idGenerator, "physical_agent", "The agent responsible to interact with the environment.");
+        Agent communicator = new Agent(++idGenerator, "communicator", "The communicator agent");
+        Agent mediator = new Agent(++idGenerator, "mediator", "The mediator agent.");
         agents.add(physicalAgent);
+        agents.add(communicator);
+        agents.add(mediator);
+
+        createPhysicalAgent(physicalAgent, mediator, facetDefinitions);
+        createMediatorAgent(mediator, communicator, physicalAgent);
+        createCommunicatorAgent(communicator, mediator);
+
         environment.setAgents(agents);
         return masSystem;
     }
 
-    private static Agent createPhysicalAgent(Agent mediator) {
-        Agent physicalAgent = new Agent(++idGenerator, "physical_agent", "The agent responsible to interact with the environment.");
-
+    private static void createPhysicalAgent(Agent physicalAgent, Agent mediator, List<FacetDefinition> facetDefinitions) {
         MentalState mentalState = new MentalState(++idGenerator);
         List<Belief> initialBeliefs = new ArrayList<>();
         mentalState.setInitialBeliefs(initialBeliefs);
@@ -245,7 +257,7 @@ public class GardenSimpleAgent {
         start.setSuccessCondition("true");
         int order = 0;
         List<Action> startActions = new ArrayList<>();
-        startActions.add(new Action(++idGenerator, "percepts", "", order, "open"));
+        startActions.add(new Action(++idGenerator, "openPercepts", "", order, "percepts", "open"));
         start.setActions(startActions);
         plans.add(start);
 
@@ -253,9 +265,9 @@ public class GardenSimpleAgent {
         temperature.setSuccessCondition("");
         order = 0;
         List<Action> temperatureActions = new ArrayList<>();
-        temperatureActions.add(new Action(++idGenerator, "percepts", "", order++, "block"));
-        temperatureActions.add(new MessageAction(++idGenerator, "sendTemperature", "", mediator, order++, "tell", "temperature"));
-        temperatureActions.add(new Action(++idGenerator, "percepts", "", order, "open"));
+        temperatureActions.add(new Action(++idGenerator, "blockPercepts", "", order++, "percepts", "block"));
+        temperatureActions.add(new MessageAction(++idGenerator, "telltemperature", "", order++, mediator, "temperature(T)"));
+        temperatureActions.add(new Action(++idGenerator, "openPercepts", "", order, "percepts", "open"));
         temperature.setActions(temperatureActions);
         plans.add(temperature);
 
@@ -263,8 +275,8 @@ public class GardenSimpleAgent {
         on.setSuccessCondition("true");
         List<Action> onActions = new ArrayList<>();
         order = 0;
-        onActions.add(new Action(++idGenerator, "print", "", order++, "Turning the irrigator on."));
-        onActions.add(new FacetAction(++idGenerator, "on", "", order));
+        onActions.add(new Action(++idGenerator, "loggingMyOnAction", "", order++, "print", "Turning the irrigator on."));
+        onActions.add(new FacetAction(++idGenerator, "turnOn", "", order, getFacetDefinitionByName(facetDefinitions ,"on")));
         on.setActions(onActions);
         plans.add(on);
 
@@ -272,12 +284,128 @@ public class GardenSimpleAgent {
         off.setSuccessCondition("true");
         List<Action> offActions = new ArrayList<>();
         order = 0;
-        offActions.add(new Action(++idGenerator, "print", "", order++, "Turning the irrigator off."));
-        offActions.add(new Action(++idGenerator, "off", "", order));
+        offActions.add(new Action(++idGenerator, "loggingMyOffAction", "", order++, "print", "Turning the irrigator off."));
+        offActions.add(new FacetAction(++idGenerator, "turnOff", "", order, getFacetDefinitionByName(facetDefinitions ,"off")));
         off.setActions(offActions);
         plans.add(off);
         physicalAgent.setPlans(plans);
-        return physicalAgent;
+    }
+
+    private static void createMediatorAgent(Agent mediator, Agent communicator, Agent physicalAgent) {
+        List<Plan> plans = new ArrayList<>();
+
+        int order = 0;
+        Plan temperatureLowerThan10 = new Plan(++idGenerator, "temperature", "Send the temperature to communicator.");
+        temperatureLowerThan10.setSuccessCondition("temperature <= 10");
+        List<Action> temperatureLowerThan10Actions = new ArrayList<>();
+        temperatureLowerThan10Actions.add(new MessageAction(++idGenerator, "sendTemperature", "", order++, communicator, "temperature(too_cold_for_plants)"));
+        temperatureLowerThan10Actions.add(new IntentionAction(++idGenerator, "temperatureIntention", "", order, "temperature"));
+        temperatureLowerThan10.setActions(temperatureLowerThan10Actions);
+        plans.add(temperatureLowerThan10);
+
+        order = 0;
+        Plan temperatureGratherThan35 = new Plan(++idGenerator, "temperature", "Send the temperature to communicator.");
+        temperatureGratherThan35.setSuccessCondition("temperature <= 35");
+        List<Action> temperatureGratherThan35Actions = new ArrayList<>();
+        temperatureGratherThan35Actions.add(new MessageAction(++idGenerator, "sendTemperature", "", order++, communicator, "temperature(too_hot_for_plants)"));
+        temperatureGratherThan35Actions.add(new IntentionAction(++idGenerator, "temperatureIntention", "", order, "temperature"));
+        temperatureGratherThan35.setActions(temperatureGratherThan35Actions);
+        plans.add(temperatureGratherThan35);
+
+        order = 0;
+        Plan temperatureError = new Plan(++idGenerator, "temperature", "Send the temperature to communicator.");
+        List<Action> temperatureErrorActions = new ArrayList<>();
+        temperatureErrorActions.add(new IntentionAction(++idGenerator, "temperatureIntention", "", order, "temperature"));
+        temperatureGratherThan35.setActions(temperatureErrorActions);
+        plans.add(temperatureError);
+
+        order = 0;
+        Plan onPlan = new Plan(++idGenerator, "on", "Asking physical_agent to turn on the sprinkler.");
+        List<Action> onActions = new ArrayList<>();
+        onActions.add(new Action(++idGenerator, "logginngMyOnAction", "", order++, "print", "Turning the irrigator on."));
+        onActions.add(new MessageAction(++idGenerator, "sendOnPgysicalAgent", "", order++, physicalAgent, "on"));
+        onActions.add(new MessageAction(++idGenerator, "sendOnCommunicator", "", order++, communicator, "irrigator(on)"));
+        onActions.add(new BeliefAction(++idGenerator, "removeIrrigatorOffBelief", "", order++, "-", "irrigator(off)"));
+        onActions.add(new BeliefAction(++idGenerator, "addIrrigatorOnBelief", "", order, "+", "irrigator(on)"));
+        onPlan.setActions(onActions);
+        plans.add(onPlan);
+
+        order = 0;
+        Plan offPlan = new Plan(++idGenerator, "off", "Asking physical_agent to turn off the sprinkler.");
+        List<Action> offActions = new ArrayList<>();
+        offActions.add(new Action(++idGenerator, "logginngMyOffAction", "", order++, "print", "Turning the irrigator off."));
+        offActions.add(new MessageAction(++idGenerator, "sendOffPgysicalAgent", "", order++, physicalAgent, "off"));
+        offActions.add(new MessageAction(++idGenerator, "sendOffCommunicator", "", order++, communicator, "irrigator(off)"));
+        offActions.add(new BeliefAction(++idGenerator, "removeIrrigatorOnBelief", "", order++, "-", "irrigator(on)"));
+        offActions.add(new BeliefAction(++idGenerator, "addIrrigatorOffBelief", "", order, "+", "irrigator(off)"));
+        offPlan.setActions(offActions);
+        plans.add(offPlan);
+
+        mediator.setPlans(plans);
+
+        MentalState mentalState = new MentalState(++idGenerator);
+        List<Belief> initialBeliefs = new ArrayList<>();
+        Belief irrigatorBelief = new Belief(++idGenerator, "irrigatorOff", "irrigator(off)");
+        initialBeliefs.add(irrigatorBelief);
+        mentalState.setInitialBeliefs(initialBeliefs);
+        List<AgentGoal> initialGoals = new ArrayList<>();
+        AgentGoal temperatureGoal = new AgentGoal(++idGenerator, "temperature", "temperature", true, temperatureGratherThan35);
+        initialGoals.add(temperatureGoal);
+        mentalState.setInitialGoals(initialGoals);
+        mediator.setInitialState(mentalState);
+    }
+
+    private static void createCommunicatorAgent(Agent communicator, Agent mediator) {
+        List<Plan> plans = new ArrayList<>();
+
+        int order = 0;
+        Plan startPlan = new Plan(++idGenerator, "start", "Start plan of the communicator agent.");
+        startPlan.setSuccessCondition("true");
+        List<Action> startActions = new ArrayList<>();
+        startActions.add(new Action(++idGenerator, "loggingMyConnectionToRML", "", order++, "print", "Connecting to RML."));
+        startActions.add(new Action(++idGenerator, "connectingToRML", "", order++, "connectToRml", "127.0.0.1", "5500"));
+        startActions.add(new IntentionAction(++idGenerator, "startIoTObjectCycle", "", order, "iotObjectCycle"));
+        startPlan.setActions(startActions);
+        plans.add(startPlan);
+
+        order = 0;
+        Plan iotObjectCyclePlan = new Plan(++idGenerator, "iotObjectCycle", "Plan to cycle IoT Object.");
+        iotObjectCyclePlan.setSuccessCondition("true");
+        List<Action> iotObjectCycleActions = new ArrayList<>();
+        iotObjectCycleActions.add(new Action(++idGenerator, "sendToRml", "", order++, "sendToRml"));
+        iotObjectCycleActions.add(new Action(++idGenerator, "waitInMilliseconds", "", order++, "wait", "1000"));
+        iotObjectCycleActions.add(new IntentionAction(++idGenerator, "restartIoTObjectCycle", "", order, "iotObjectCycle"));
+        iotObjectCyclePlan.setActions(iotObjectCycleActions);
+        plans.add(iotObjectCyclePlan);
+
+        Plan on = new Plan(++idGenerator, "on", "");
+        on.setSuccessCondition("true");
+        List<Action> onActions = new ArrayList<>();
+        order = 0;
+        onActions.add(new Action(++idGenerator, "loggingMyOnAction", "", order++, "print", "Asking mediator to turn on the irrigator."));
+        onActions.add(new MessageAction(++idGenerator, "sendTurnOn", "", order, mediator, "on"));
+        on.setActions(onActions);
+        plans.add(on);
+
+        Plan off = new Plan(++idGenerator, "off", "");
+        off.setSuccessCondition("true");
+        List<Action> offActions = new ArrayList<>();
+        order = 0;
+        offActions.add(new Action(++idGenerator, "loggingMyOffAction", "", order++, "print", "Asking mediator to turn off the irrigator."));
+        offActions.add(new MessageAction(++idGenerator, "sendTurnOff", "", order, mediator, "off"));
+        off.setActions(offActions);
+        plans.add(off);
+
+        communicator.setPlans(plans);
+
+        MentalState mentalState = new MentalState(++idGenerator);
+        List<Belief> initialBeliefs = new ArrayList<>();
+        mentalState.setInitialBeliefs(initialBeliefs);
+        List<AgentGoal> initialGoals = new ArrayList<>();
+        AgentGoal startGoal = new AgentGoal(++idGenerator, "start", "start", true, startPlan);
+        initialGoals.add(startGoal);
+        mentalState.setInitialGoals(initialGoals);
+        communicator.setInitialState(mentalState);
     }
 
     private static List<Resource> createResources(PhysicalResource sprinkler, PhysicalResource temperatureSensor, PhysicalResource phSensor, PhysicalResource moisturePhSensor, PhysicalResource luminositySensor) {
@@ -342,5 +470,9 @@ public class GardenSimpleAgent {
             functions.addAll(physicalResource.getTopics());
         }
         return functions.stream().filter(function -> function.getName().equals(functionName)).findFirst().orElse(null);
+    }
+
+    public static FacetDefinition getFacetDefinitionByName(List<FacetDefinition> facetDefinitions, String name) {
+        return facetDefinitions.stream().filter(facetDefinition -> facetDefinition.getName().equals(name)).findAny().orElse(null);
     }
 }

@@ -1,11 +1,8 @@
-import java.util.Arrays;
-
-public class MessageSchema {
-    public static final MessageSchema TELL_MESSAGE_SCHEMA = new MessageSchema("tellMessageSchema", "ilocutionaryForce;message");
+public class ActionSchema {
     private String name;
     private String parameterDefinition;
 
-    public MessageSchema(String name, String parameterDefinition) {
+    public ActionSchema(String name, String parameterDefinition) {
         this.name = name;
         this.parameterDefinition = parameterDefinition;
     }

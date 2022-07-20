@@ -5,6 +5,9 @@ public class Plan {
     private String name;
     private String description;
     private String failureCondition;
+
+    /** The success condition to execute the plan. If this field is empty, this plan will be treated as a failure plan,
+     * like -!plan <- someAction. */
     private String successCondition;
     private List<Action> actions;
 
