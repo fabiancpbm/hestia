@@ -1,6 +1,11 @@
-public class MessageSchema {
+public class ActionSchema {
     private String name;
     private String parameterDefinition;
+
+    public ActionSchema(String name, String parameterDefinition) {
+        this.name = name;
+        this.parameterDefinition = parameterDefinition;
+    }
 
     public String getName() {
         return name;

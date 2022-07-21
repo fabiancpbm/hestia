@@ -2,7 +2,13 @@ import java.util.List;
 
 public class FunctionCall extends Block {
     private Function targetFunction;
-    private List<Argument> arguments;
+    private List<Value> arguments;
+
+    public FunctionCall(int id, int order, Function targetFunction, List<Value> arguments) {
+        super(id, order);
+        this.targetFunction = targetFunction;
+        this.arguments = arguments;
+    }
 
     public Function getTargetFunction() {
         return targetFunction;
@@ -12,11 +18,11 @@ public class FunctionCall extends Block {
         this.targetFunction = targetFunction;
     }
 
-    public List<Argument> getArguments() {
+    public List<Value> getArguments() {
         return arguments;
     }
 
-    public void setArguments(List<Argument> arguments) {
+    public void setArguments(List<Value> arguments) {
         this.arguments = arguments;
     }
 

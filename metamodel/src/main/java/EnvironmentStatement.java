@@ -1,7 +1,14 @@
 public class EnvironmentStatement {
-    private int id;
-    private String name;
-    private String statement;
+    protected int id;
+
+    protected String name;
+    protected String statement;
+
+    public EnvironmentStatement(int id, String name, String statement) {
+        this.id = id;
+        this.name = name;
+        this.statement = statement;
+    }
 
     public int getId() {
         return id;

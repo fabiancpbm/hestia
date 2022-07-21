@@ -1,21 +1,12 @@
-public class MessageAction {
-    private String parameter;
-    private MessageSchema template;
+public class MessageAction extends Action {
 
-    public String getParameter() {
-        return parameter;
+    private static final ActionSchema ACTION_SCHEMA = new ActionSchema("messageAction", "to;message");
+
+    public MessageAction(int id, String name, String description, int order) {
+        super(id, name, description, order, ACTION_SCHEMA);
     }
 
-    public void setParameter(String parameter) {
-        this.parameter = parameter;
+    public MessageAction(int id, String name, String description, int order, Agent to, String message) {
+        super(id, name, description, order, ACTION_SCHEMA, String.valueOf(to.getId()), message);
     }
-
-    public MessageSchema getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(MessageSchema template) {
-        this.template = template;
-    }
-
 }

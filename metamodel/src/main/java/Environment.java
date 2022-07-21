@@ -8,6 +8,12 @@ public class Environment {
     private List<FacetDefinition> facets;
     private List<Agent> agents;
 
+    public Environment(int id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
     public int getId() {
         return id;
     }

@@ -1,9 +1,16 @@
 public class Pin {
     private int id;
     private String name;
-    private String isAnalog;
-    private String isInput;
+    private boolean isAnalog;
+    private boolean isInput;
     private Port port;
+
+    public Pin(int id, String name, boolean isAnalog, boolean isInput) {
+        this.id = id;
+        this.name = name;
+        this.isAnalog = isAnalog;
+        this.isInput = isInput;
+    }
 
     public int getId() {
         return id;
@@ -21,19 +28,19 @@ public class Pin {
         this.name = name;
     }
 
-    public String getIsAnalog() {
+    public boolean getIsAnalog() {
         return isAnalog;
     }
 
-    public void setIsAnalog(String isAnalog) {
+    public void setIsAnalog(boolean isAnalog) {
         this.isAnalog = isAnalog;
     }
 
-    public String getIsInput() {
+    public boolean getIsInput() {
         return isInput;
     }
 
-    public void setIsInput(String isInput) {
+    public void setIsInput(boolean isInput) {
         this.isInput = isInput;
     }
 
