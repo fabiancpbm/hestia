@@ -1,10 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GardenSimpleAgent {
     public static void main(String[] args) {
@@ -34,32 +31,15 @@ public class GardenSimpleAgent {
         MASSystem masSystem = createMAS(sprinkler, temperatureSensor, phSensor, moisturePhSensor, luminositySensor);
         platfotm.setMasSystem(masSystem);
 
+        createBehaviouralFunctions(sprinkler, temperatureSensor, phSensor, moisturePhSensor, luminositySensor);
+
         Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ").create();
         String s = gson.toJson(platfotm);
         System.out.println(s);
-
-        // Behavioural metamodel
-        Function onFn;
-        Function offFn;
-        Function statusFn;
-        Command onCommand;
-        Command offCommand;
-        Topic status;
-
-        Function valueInCelsiusFn;
-        Topic valueInCelsius;
-
-        Function getPhValue;
-        Topic valueInPh;
-
-        Function valueInKgPerM3Fn;
-        Topic valueInKgPerM3;
-
-        Function luminosityStatusFn;
-        Topic luminosityStatus;
     }
 
     private static int idGenerator = 0;
+
     private static PhysicalResource createSprinkler() {
         PhysicalResource sprinkler = new PhysicalResource(++idGenerator, "sprinkler", "Sprinkler is used to moisten the soil.");
 
@@ -425,13 +405,13 @@ public class GardenSimpleAgent {
     }
 
     private static List<FacetDefinition> createFacetDefinitions(PhysicalResource sprinkler, PhysicalResource temperatureSensor, PhysicalResource phSensor, PhysicalResource moisturePhSensor, PhysicalResource luminositySensor) {
-        Function onCommand = getFunctionByResourceName(sprinkler, "on");
-        Function offCommand = getFunctionByResourceName(sprinkler, "off");
-        Function status = getFunctionByResourceName(sprinkler, "status");
-        Function valueInCelsius = getFunctionByResourceName(temperatureSensor, "valueInCelsius");
-        Function valueInPh = getFunctionByResourceName(phSensor, "valueInPh");
-        Function valueInKgPerM3 = getFunctionByResourceName(moisturePhSensor, "valueInKgPerM3");
-        Function luminosityStatus = getFunctionByResourceName(luminositySensor, "status");
+        Function onCommand = getFunctionByResourceAndName(sprinkler, "on");
+        Function offCommand = getFunctionByResourceAndName(sprinkler, "off");
+        Function status = getFunctionByResourceAndName(sprinkler, "status");
+        Function valueInCelsius = getFunctionByResourceAndName(temperatureSensor, "valueInCelsius");
+        Function valueInPh = getFunctionByResourceAndName(phSensor, "valueInPh");
+        Function valueInKgPerM3 = getFunctionByResourceAndName(moisturePhSensor, "valueInKgPerM3");
+        Function luminosityStatus = getFunctionByResourceAndName(luminositySensor, "status");
 
         List<FacetDefinition> facetDefinitions = new ArrayList<>();
         facetDefinitions.add(createFacetDefinitionByFunction(onCommand));
@@ -461,7 +441,168 @@ public class GardenSimpleAgent {
         return facetDefinition;
     }
 
-    private static Function getFunctionByResourceName(PhysicalResource physicalResource, String functionName) {
+    private static void createBehaviouralFunctions(PhysicalResource sprinkler, PhysicalResource temperatureSensor, PhysicalResource phSensor, PhysicalResource moisturePhSensor, PhysicalResource luminositySensor) {
+        int order;
+
+        Component valve = getComponentByResourceAndName(sprinkler, "valve");
+        Function onFn = getFunctionByComponentAndName(valve, "open");
+        if (onFn != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            blocks.add(new WriteInPort(++idGenerator, order, valve.getPins().get(0), new Value(++idGenerator, "", "HIGH", ValueType.SIGNAL)));
+            onFn.setBlocks(blocks);
+        }
+
+        Function onCommand = getFunctionByResourceAndName(sprinkler, "on");
+        if (onCommand != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            blocks.add(new FunctionCall(++idGenerator, order, onFn, new ArrayList<>()));
+            onCommand.setBlocks(blocks);
+        }
+
+        Function offFn = getFunctionByComponentAndName(valve, "close");
+        if (offFn != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            blocks.add(new WriteInPort(++idGenerator, order, valve.getPins().get(0), new Value(++idGenerator, "", "LOW", ValueType.SIGNAL)));
+            offFn.setBlocks(blocks);
+        }
+
+        Function offCommand = getFunctionByResourceAndName(sprinkler, "off");
+        if (offCommand != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            blocks.add(new FunctionCall(++idGenerator, order, offFn, new ArrayList<>()));
+            offCommand.setBlocks(blocks);
+        }
+
+        Function statusFn = getFunctionByComponentAndName(valve, "status");
+        if (statusFn != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            blocks.add(new ReadFromPin(++idGenerator, order, new Value(++idGenerator, "valveStatus", "", ValueType.SIGNAL), valve.getPins().get(0)));
+            statusFn.setBlocks(blocks);
+        }
+
+        Function statusTopic = getFunctionByResourceAndName(sprinkler, "status");
+        if (statusTopic != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            Value statusValue = new Value(++idGenerator, "statusValue", "", ValueType.SIGNAL);
+            blocks.add(new Assignment(++idGenerator, order++, statusFn, new ArrayList<>(), statusValue));
+            Decision decisionBlock = new Decision(++idGenerator, order, "statusValue == HIGH");
+            decisionBlock.getTrueBlocks().add(new Assignment(++idGenerator, 0, new Function(++idGenerator, "=", ""), new ArrayList<>(), new Value(++idGenerator, "", "on", ValueType.TEXT)));
+            decisionBlock.getFalseBlocks().add(new Assignment(++idGenerator, 0, new Function(++idGenerator, "=", ""), new ArrayList<>(), new Value(++idGenerator, "", "off", ValueType.TEXT)));
+            blocks.add(decisionBlock);
+            statusTopic.setBlocks(blocks);
+        }
+
+        Component lm35 = getComponentByResourceAndName(temperatureSensor, "lm35");
+        Function valueInCelsiusFn = getFunctionByComponentAndName(lm35, "getValue");
+        if (valueInCelsiusFn != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            blocks.add(new ReadFromPin(++idGenerator, order, new Value(++idGenerator, "valueInCelsius", "", ValueType.NUMBER), lm35.getPins().get(0)));
+            valueInCelsiusFn.setBlocks(blocks);
+        }
+
+        Function valueInCelsiusTopic = getFunctionByResourceAndName(temperatureSensor, "valueInCelsius");
+        if (valueInCelsiusTopic != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            Value valueInCelsius = new Value(++idGenerator, "valueInCelsius", "", ValueType.NUMBER);
+            blocks.add(new Assignment(++idGenerator, order++, valueInCelsiusFn, new ArrayList<>(), valueInCelsius));
+            blocks.add(new Assignment(++idGenerator, order, new Function(++idGenerator, "*", ""), Arrays.asList(valueInCelsius, new Value(++idGenerator, "", "2.5", ValueType.NUMBER)), new Value(++idGenerator, "result", "", ValueType.NUMBER)));
+            valueInCelsiusTopic.setBlocks(blocks);
+        }
+
+        Component phModule = getComponentByResourceAndName(phSensor, "phModule");
+        Function getPhValueFn = getFunctionByComponentAndName(phModule, "getValue");
+        if (getPhValueFn != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            blocks.add(new ReadFromPin(++idGenerator, order, new Value(++idGenerator, "phValue", "", ValueType.NUMBER), phModule.getPins().get(0)));
+            getPhValueFn.setBlocks(blocks);
+        }
+
+        Function valueInPhTopic = getFunctionByResourceAndName(phSensor, "valueInPh");
+        if (valueInPhTopic != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            Value valueInPh = new Value(++idGenerator, "valueInPh", "", ValueType.NUMBER);
+            blocks.add(new Assignment(++idGenerator, order++, getPhValueFn, new ArrayList<>(), valueInPh));
+            Value pHVolMultiplied = new Value(++idGenerator, "pHVolMultiplied", "", ValueType.NUMBER);
+            blocks.add(new Assignment(++idGenerator, order++, new Function(++idGenerator, "*", ""), Arrays.asList(valueInPh, new Value(++idGenerator, "", "-5.7", ValueType.NUMBER)), pHVolMultiplied));
+            blocks.add(new Assignment(++idGenerator, order, new Function(++idGenerator, "+", ""), Arrays.asList(pHVolMultiplied, new Value(++idGenerator, "", "28.4", ValueType.NUMBER)), new Value(++idGenerator, "result", "", ValueType.NUMBER)));
+            valueInPhTopic.setBlocks(blocks);
+        }
+
+        Component moistureModule = getComponentByResourceAndName(moisturePhSensor, "moistureModule");
+        Function valueInKgPerM3Fn = getFunctionByComponentAndName(moistureModule, "getValue");
+        if (valueInKgPerM3Fn != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            blocks.add(new ReadFromPin(++idGenerator, order, new Value(++idGenerator, "moistureValue", "", ValueType.NUMBER), moistureModule.getPins().get(0)));
+            valueInKgPerM3Fn.setBlocks(blocks);
+        }
+
+        Function valueInKgPerM3Topic = getFunctionByResourceAndName(moisturePhSensor, "valueInKgPerM3");
+        if (valueInKgPerM3Topic != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            Value moistureValue = new Value(++idGenerator, "moistureValue", "", ValueType.NUMBER);
+            blocks.add(new Assignment(++idGenerator, order++, valueInKgPerM3Fn, new ArrayList<>(), moistureValue));
+            Decision gratherThan400 = new Decision(++idGenerator, order++, "moistureValue > 400");
+            gratherThan400.getTrueBlocks().add(new Assignment(++idGenerator, 0, new Function(++idGenerator, "=", ""), new ArrayList<>(), new Value(++idGenerator, "finalMoistureValue", "dry", ValueType.TEXT)));
+            gratherThan400.getFalseBlocks().add(new Assignment(++idGenerator, 0, new Function(++idGenerator, "=", ""), new ArrayList<>(), null));
+            blocks.add(gratherThan400);
+            Decision lowerThan400GratherThan300 = new Decision(++idGenerator, order++, "moistureValue < 400 && moistureValue > 300");
+            lowerThan400GratherThan300.getTrueBlocks().add(new Assignment(++idGenerator, 0, new Function(++idGenerator, "=", ""), new ArrayList<>(), new Value(++idGenerator, "finalMoistureValue", "wet", ValueType.TEXT)));
+            lowerThan400GratherThan300.getFalseBlocks().add(new Assignment(++idGenerator, 0, new Function(++idGenerator, "=", ""), new ArrayList<>(), null));
+            blocks.add(lowerThan400GratherThan300);
+            Decision lowerThan300 = new Decision(++idGenerator, order, "moistureValue < 300");
+            lowerThan300.getTrueBlocks().add(new Assignment(++idGenerator, 0, new Function(++idGenerator, "=", ""), new ArrayList<>(), new Value(++idGenerator, "finalMoistureValue", "ideal", ValueType.TEXT)));
+            lowerThan300.getFalseBlocks().add(new Assignment(++idGenerator, 0, new Function(++idGenerator, "=", ""), new ArrayList<>(), null));
+            blocks.add(lowerThan300);
+            valueInKgPerM3Topic.setBlocks(blocks);
+        }
+
+        Component ldr = getComponentByResourceAndName(luminositySensor, "ldr");
+        Function luminosityStatusFn = getFunctionByComponentAndName(ldr, "status");;
+        if (luminosityStatusFn != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            blocks.add(new ReadFromPin(++idGenerator, order, new Value(++idGenerator, "luminosityStatus", "", ValueType.SIGNAL), ldr.getPins().get(0)));
+            luminosityStatusFn.setBlocks(blocks);
+        }
+
+        Function luminosityStatusTopic = getFunctionByResourceAndName(luminositySensor, "status");
+        if (luminosityStatusTopic != null) {
+            order = 0;
+            List<Block> blocks = new ArrayList<>();
+            Value statusValue = new Value(++idGenerator, "luminosityStatus", "", ValueType.SIGNAL);
+            blocks.add(new Assignment(++idGenerator, order++, luminosityStatusFn, new ArrayList<>(), statusValue));
+            Decision decisionBlock = new Decision(++idGenerator, order, "luminosityStatus == HIGH");
+            decisionBlock.getTrueBlocks().add(new Assignment(++idGenerator, 0, new Function(++idGenerator, "=", ""), new ArrayList<>(), new Value(++idGenerator, "", "withLight", ValueType.TEXT)));
+            decisionBlock.getFalseBlocks().add(new Assignment(++idGenerator, 0, new Function(++idGenerator, "=", ""), new ArrayList<>(), new Value(++idGenerator, "", "noLight", ValueType.TEXT)));
+            blocks.add(decisionBlock);
+            luminosityStatusTopic.setBlocks(blocks);
+        }
+    }
+
+    private static Function getFunctionByComponentAndName(Component component, String functionName) {
+        if (component == null || component.getFunctions() == null) {
+            return null;
+        }
+        return component.getFunctions().stream().filter(function -> function.getName().equals(functionName)).findAny().orElse(null);
+    }
+
+    private static Component getComponentByResourceAndName(PhysicalResource resource, String componentName) {
+        return resource.getComponents().stream().filter(component1 -> component1.getName().equals(componentName)).findAny().orElse(null);
+    }
+
+    private static Function getFunctionByResourceAndName(PhysicalResource physicalResource, String functionName) {
         List<Function> functions = new ArrayList<>();
         if (physicalResource.getCommands() != null) {
             functions.addAll(physicalResource.getCommands());

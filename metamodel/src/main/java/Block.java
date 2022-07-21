@@ -2,6 +2,14 @@ public class Block {
     private int id;
     private int order;
 
+    public Block() {
+    }
+
+    public Block(int id, int order) {
+        this.id = id;
+        this.order = order;
+    }
+
     public int getId() {
         return id;
     }

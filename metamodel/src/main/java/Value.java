@@ -4,6 +4,13 @@ public class Value {
     private String content;
     private ValueType type;
 
+    public Value(int id, String name, String content, ValueType type) {
+        this.id = id;
+        this.name = name;
+        this.content = content;
+        this.type = type;
+    }
+
     public int getId() {
         return id;
     }

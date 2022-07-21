@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class Function {
@@ -12,7 +13,7 @@ public class Function {
 
     protected List<Block> blocks;
 
-    protected List<Parameter> parameters;
+    protected List<Parameter> parameters = new ArrayList<>();
 
     public Function() {
 
