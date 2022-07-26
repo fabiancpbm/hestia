@@ -13,7 +13,7 @@ The word “hestia” meant “hearth” or “beside the hearth” in Ancient G
 
 ## What is Hestia
 
-Hestia is a modeling language for Embedded Multi-Agent System (MAS). 
+Hestia is a modeling language for Embedded Multi-metamodel.Agent System (MAS). 
 
 ## Objective
 
@@ -23,8 +23,8 @@ The main objective of this language is to standardize the way of representing a 
 
 ### Metamodel
 
-#### Multi-Agent Metamodel
-![Multi-Agent Metamodel](/img/multi-agent-metamodel.png)
+#### Multi-metamodel.Agent Metamodel
+![Multi-metamodel.Agent Metamodel](/img/multi-agent-metamodel.png)
 
 #### Structural Metamodel
 ![Structural Metamodel](/img/structural-metamodel.png)

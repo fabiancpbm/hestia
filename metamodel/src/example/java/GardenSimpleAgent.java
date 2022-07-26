@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import metamodel.*;
 
 import java.util.*;
 
@@ -27,7 +28,7 @@ public class GardenSimpleAgent {
         microcontrollerMap.put("/dev/ttyS0", microcontroller);
         platfotm.setPortMicrocontrollerMap(microcontrollerMap);
 
-        // Multi-Agent metamodel
+        // Multi-metamodel.Agent metamodel
         MASSystem masSystem = createMAS(sprinkler, temperatureSensor, phSensor, moisturePhSensor, luminositySensor);
         platfotm.setMasSystem(masSystem);
 
@@ -339,7 +340,7 @@ public class GardenSimpleAgent {
         List<Plan> plans = new ArrayList<>();
 
         int order = 0;
-        Plan startPlan = new Plan(++idGenerator, "start", "Start plan of the communicator agent.");
+        Plan startPlan = new Plan(++idGenerator, "start", "metamodel.Start plan of the communicator agent.");
         startPlan.setSuccessCondition("true");
         List<Action> startActions = new ArrayList<>();
         startActions.add(new Action(++idGenerator, "loggingMyConnectionToRML", "", order++, "print", "Connecting to RML."));
@@ -349,7 +350,7 @@ public class GardenSimpleAgent {
         plans.add(startPlan);
 
         order = 0;
-        Plan iotObjectCyclePlan = new Plan(++idGenerator, "iotObjectCycle", "Plan to cycle IoT Object.");
+        Plan iotObjectCyclePlan = new Plan(++idGenerator, "iotObjectCycle", "metamodel.Plan to cycle IoT Object.");
         iotObjectCyclePlan.setSuccessCondition("true");
         List<Action> iotObjectCycleActions = new ArrayList<>();
         iotObjectCycleActions.add(new Action(++idGenerator, "sendToRml", "", order++, "sendToRml"));
