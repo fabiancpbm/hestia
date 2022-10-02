@@ -34,9 +34,13 @@ The main objective of this language is to standardize the way of representing a 
 ![Behavioural Metamodel](/img/behavioural_metamodel.png)
 
 ### Modeling language symbols
+In progress
 
 ### Usage Examples and Recommendations
+In progress
 
 ### From metamodel to code
+![Test the compiler here](/embedded-mas-compiler/README.md)
 
 ### From metamodel to diagram
+In progress
