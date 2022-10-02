@@ -1,3 +1,4 @@
+
 # Hestia
 
 ![Héstia](https://static.wikia.nocookie.net/bestiario-mitologico/images/7/71/H%C3%A9stia.png/revision/latest?cb=20190929054124&path-prefix=pt-br)
@@ -24,13 +25,13 @@ The main objective of this language is to standardize the way of representing a 
 ### Metamodel
 
 #### Multi-Agent Metamodel
-![Multi-Agent Metamodel](/img/multi-agent-metamodel.png)
+![Multi-Agent Metamodel](/img/multiagent_metamodel.png)
 
 #### Structural Metamodel
-![Structural Metamodel](/img/structural-metamodel.png)
+![Structural Metamodel](/img/structural_metamodel.png)
 
 #### Behavioural Metamodel
-![Behavioural Metamodel](/img/behavioural-metamodel.png)
+![Behavioural Metamodel](/img/behavioural_metamodel.png)
 
 ### Modeling language symbols
 
