@@ -11,6 +11,15 @@
 
     <artifactId>metamodel</artifactId>
 
+    <properties>
+        <src.dir>src</src.dir>
+        <test.dir>test</test.dir>
+    </properties>
+
+    <build>
+        <sourceDirectory>${src.dir}</sourceDirectory>
+        <testSourceDirectory>${test.dir}</testSourceDirectory>
+    </build>
 
     <dependencies>
         <dependency>
