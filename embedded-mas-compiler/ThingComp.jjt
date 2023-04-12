@@ -5,8 +5,10 @@ PARSER_BEGIN(ThingComp)
   *
   * O código
   */
-import java.io.File;import java.util.ArrayList;public class ThingComp {
+import java.io.File;
+import java.util.ArrayList;
 
+public class ThingComp {
   /** É possível passar um arquivo para ser analisado .thing ou escrever a linguagem na linha de comando. Na pasta do projeto tem um arquivo de exemplo simulando a criação de um device chamado smart-home. */
   public static void main(String args[]) throws ParseException {
     ThingComp parser;
