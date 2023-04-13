@@ -10,4 +10,26 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>embedded-mas-compiler</artifactId>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javacc-maven-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>compile-javacc</id>
+                        <goals>
+                            <goal>javacc</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <outputDirectory>${project.build.directory}/generated-sources/javacc</outputDirectory>
+                    <grammarFile>src/ThingComp.jjt</grammarFile>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
