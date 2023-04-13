@@ -10,11 +10,18 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>metamodel</module>
+        <module>embedded-mas-compiler</module>
     </modules>
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <src.dir>src</src.dir>
+        <test.dir>test</test.dir>
     </properties>
 
+    <build>
+        <sourceDirectory>${src.dir}</sourceDirectory>
+        <testSourceDirectory>${test.dir}</testSourceDirectory>
+    </build>
 
 </project>

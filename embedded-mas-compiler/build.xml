@@ -3,19 +3,19 @@
   <property name="javacc.home" value="lib/"/>
 
   <target name="ThingComp" description="Builds example 'ThingComp'">
-    <delete dir="ThingComp"/>
-    <mkdir dir="ThingComp"/>
-    <copy file="ThingComp.jjt" todir="ThingComp"/>
-    <jjtree target="ThingComp.jjt" outputdirectory="ThingComp" javacchome="${javacc.home}"/>
-    <javacc target="ThingComp/ThingComp.jj" outputdirectory="ThingComp" javacchome="${javacc.home}"/>
-    <javac deprecation="false" srcdir="ThingComp" destdir="ThingComp" includeantruntime='false'/>
+    <delete dir="target/ThingComp"/>
+    <mkdir dir="target/ThingComp"/>
+    <copy file="src/ThingComp.jjt" todir="target/ThingComp"/>
+    <jjtree target="src/ThingComp.jjt" outputdirectory="target/ThingComp" javacchome="${javacc.home}"/>
+    <javacc target="target/ThingComp/ThingComp.jj" outputdirectory="target/ThingComp" javacchome="${javacc.home}"/>
+    <javac deprecation="false" srcdir="target/ThingComp" destdir="target/ThingComp" includeantruntime='false'/>
     <echo message="*******"/>
     <echo message="******* Now cd into the ThingComp directory and run 'java Eg1' ******"/>
     <echo message="*******"/>
   </target>
     
   <target name="clean" description="Cleans up any example directories">
-    <delete dir="ThingComp"/>
+    <delete dir="target/ThingComp"/>
   </target>
     
 
