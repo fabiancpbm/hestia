@@ -1,13 +1,13 @@
-<project name="embedded-mas-compiler" default="ThingComp" basedir=".">
+<project name="embedded-mas-compiler" default="ThingComp" basedir="embedded-mas-compiler">
 
-  <property name="javacc.home" value="lib/"/>
+  <property name="javacc.home" value="embedded-mas-compiler/lib/"/>
 
   <target name="ThingComp" description="Builds example 'ThingComp'">
     <delete dir="target/ThingComp"/>
     <mkdir dir="target/ThingComp"/>
-    <copy file="src/main/jjtree/ThingComp.jjt" todir="target/ThingComp"/>
-    <jjtree target="src/main/jjtree/ThingComp.jjt" outputdirectory="target/ThingComp" javacchome="${javacc.home}"/>
-    <javacc target="target/ThingComp/ThingComp.jj" outputdirectory="target/ThingComp" javacchome="${javacc.home}"/>
+    <copy file="../src/main/jjtree/ThingComp.jjt" todir="target/ThingComp"/>
+    <jjtree target="../src/main/jjtree/ThingComp.jjt" outputdirectory="target/ThingComp" javacchome="embedded-mas-compiler/lib"/>
+    <javacc target="target/ThingComp/ThingComp.jj" outputdirectory="target/ThingComp" javacchome="embedded-mas-compiler/lib"/>
     <javac deprecation="false" srcdir="target/ThingComp" destdir="target/ThingComp" includeantruntime='false'/>
     <echo message="*******"/>
     <echo message="******* Now cd into the ThingComp directory and run 'java Eg1' ******"/>
