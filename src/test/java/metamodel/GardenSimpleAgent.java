@@ -2,7 +2,6 @@ package metamodel;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import metamodel.*;
 
 import java.util.*;
 
