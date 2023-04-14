@@ -123,7 +123,7 @@ void MicrocontrollerBodyGroup() :
 {
     <MICROCONTROLLER_GROUP> "{" (t = <SYMBOL>  content = MicrocontrollerValue()
         {
-            java.io.File path = new java.io.File("../Project/Hardware/");
+            java.io.File path = new java.io.File("projetinho/Project/Hardware/");
             String fileName = t.image;
             String sensors = content.split(";;;")[0].replaceAll("\n+", "\n");
             String actuators = content.split(";;;")[1].replaceAll("\n+", "\n");
@@ -164,7 +164,7 @@ void MicrocontrollerBody() :
 {
     <MICROCONTROLLER> t = <SYMBOL>  content = MicrocontrollerValue()
     {
-        java.io.File path = new java.io.File("../Project/Hardware/");
+        java.io.File path = new java.io.File("projetinho/Project/Hardware/");
         String fileName = t.image;
         String sensors = content.split(";;;")[0].replaceAll("\n+", "\n");
         String actuators = content.split(";;;")[1].replaceAll("\n+", "\n");
@@ -329,7 +329,7 @@ void ArtifactBodyGroup() :
 {
     <ARTIFACT_GROUP> "{" (t = <SYMBOL>  obsProperties = ArtifactValue()
         {
-            java.io.File path = new java.io.File("../Project/MAS/artifact/");
+            java.io.File path = new java.io.File("projetinho/Project/MAS/artifact/");
             String fileName = t.image.replaceAll("-", "");
             String fileContent = "import cartago.*;\npublic class " + fileName + " extends Artifact {\n\tvoid init() {\n\t\t" + obsProperties.replaceAll("\n", "\n\t\t") + "\n\t}\n}";
             try {
@@ -355,7 +355,7 @@ void ArtifactBody() :
 {
     <ARTIFACT> t =  <SYMBOL>  obsProperties = ArtifactValue()
     {
-        java.io.File path = new java.io.File("../Project/MAS/artifact/");
+        java.io.File path = new java.io.File("projetinho/Project/MAS/artifact/");
         String fileName = t.image.replaceAll("-", "");
         String fileContent = "import cartago.*;\npublic class " + fileName + " extends Artifact {\n\tvoid init() {\n\t\t" + obsProperties.replaceAll("\n", "\n\t\t") + "\n\t}\n}";
         try {
@@ -396,7 +396,7 @@ void AgentBodyGroup() :
 {
     <AGENT_GROUP> "{" (t = <SYMBOL>  fileContent = AgentValue()
         {
-            java.io.File path = new java.io.File("../Project/MAS/agent/");
+            java.io.File path = new java.io.File("projetinho/Project/MAS/agent/");
             try {
                 path.mkdirs();
                 java.io.File file = new File(path + "/" + t.image + ".asl");
@@ -421,7 +421,7 @@ void AgentBody() :
 {
     <AGENT> t = <SYMBOL>  fileContent = AgentValue()
     {
-        java.io.File path = new java.io.File("../Project/MAS/agent/");
+        java.io.File path = new java.io.File("projetinho/Project/MAS/agent/");
         try {
             path.mkdirs();
             java.io.File file = new File(path + "/" + t.image + ".asl");

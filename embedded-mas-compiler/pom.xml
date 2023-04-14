@@ -16,19 +16,18 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.0.1</version>
                 <executions>
                     <execution>
-                        <id>compile-javacc</id>
+                        <id>jjtree-javacc</id>
                         <goals>
-                            <goal>javacc</goal>
+                            <goal>jjtree-javacc</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <outputDirectory>${project.build.directory}/generated-sources/javacc</outputDirectory>
-                    <grammarFile>src/ThingComp.jjt</grammarFile>
-                </configuration>
+<!--                <configuration>-->
+<!--                    <sourceDirectory>${basedir}/src</sourceDirectory>-->
+<!--                </configuration>-->
             </plugin>
         </plugins>
     </build>
