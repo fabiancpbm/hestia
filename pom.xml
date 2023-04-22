@@ -12,8 +12,9 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <src.dir>src/main/java</src.dir>
-        <test.dir>src/test/java</test.dir>
+        <src.dir>${project.basedir}/src/main/java</src.dir>
+        <test.dir>${project.basedir}/src/test/java</test.dir>
+        <test-hestia.dir>${project.basedir}/src/test/hestia</test-hestia.dir>
     </properties>
 
     <build>
