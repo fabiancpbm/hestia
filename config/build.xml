@@ -5,8 +5,8 @@
   <target name="ThingComp" description="Builds example 'ThingComp'">
     <delete dir="target/ThingComp"/>
     <mkdir dir="target/ThingComp"/>
-    <copy file="../src/main/jjtree/ThingComp.jjt" todir="target/ThingComp"/>
-    <jjtree target="../src/main/jjtree/ThingComp.jjt" outputdirectory="target/ThingComp" javacchome="embedded-mas-compiler/lib"/>
+    <copy file="../src/main/javacc/ThingComp.jj" todir="target/ThingComp"/>
+    <jjtree target="../src/main/javacc/ThingComp.jj" outputdirectory="target/ThingComp" javacchome="embedded-mas-compiler/lib"/>
     <javacc target="target/ThingComp/ThingComp.jj" outputdirectory="target/ThingComp" javacchome="embedded-mas-compiler/lib"/>
     <javac deprecation="false" srcdir="target/ThingComp" destdir="target/ThingComp" includeantruntime='false'/>
     <echo message="*******"/>

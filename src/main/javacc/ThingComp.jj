@@ -28,8 +28,7 @@ public class ThingComp {
         return;
     }
 
-    SimpleNode n = parser.ThingBody();
-    n.dump("");
+    parser.ThingBody();
   }
 }
 
@@ -87,14 +86,14 @@ TOKEN :
     | <VAR : ".var">
 }
 
-SimpleNode ThingBody() :
+void ThingBody() :
 {
 }
 {
     <THING> <SYMBOL> "{" (ExogenousBodyGroup() | ExogenousBody() | MASBodyGroup() | MASBody()) * "}" <EOF>
-    {
-        return jjtThis;
-    }
+//    {
+//        return jjtThis;
+//    }
 }
 
 void ExogenousBodyGroup() :
