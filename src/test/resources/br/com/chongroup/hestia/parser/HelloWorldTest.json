@@ -1,0 +1,11 @@
+[
+  {
+    "testName": "helloTestFunction",
+    "thingSource": "br/com/chongroup/hestia/parser/HelloWordTest/helloTestFunction.thing",
+    "expected": [
+      {
+        "filePath":  "Hardware/arduino-mega.ino",
+        "fileContent": ""
+      }]
+  }
+]

@@ -26,6 +26,12 @@
             </resource>
         </resources>
         <testSourceDirectory>${test.dir}</testSourceDirectory>
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/src/test/resources</directory>
+            </testResource>
+        </testResources>
+
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

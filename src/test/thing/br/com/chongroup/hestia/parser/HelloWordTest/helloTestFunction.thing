@@ -1,0 +1,30 @@
+.thing smart-home {
+    .exogenous _ {
+        .microcontroller arduino-mega {
+            .sensor* {
+                lamp "A0";
+                presence "A1";
+            }
+            .actuator light 13;
+        }
+        .middleware javino :smart-home:mas-home:agent:argo-agent;
+    }
+    .mas mas-home {
+        .endogenous _ {
+            .artifact LampArtifact {
+                .var lampIsOn false;
+            }
+            .artifact PresenceArtifact {
+                .var anyonePresent false;
+            }
+        }
+        .agent* {
+            luminosity-agent {
+                .belief it-is-clear "yes";
+            }
+            argo-agent {
+                .belief connected true;
+            }
+        }
+    }
+}
