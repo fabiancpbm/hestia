@@ -1,8 +1,12 @@
 package br.com.chongroup.hestia.parser;
 
-public class HelloWorldModel {
+import java.util.List;
+
+public class ParserTestMetadata {
     private String testName;
     private String thingSource;
+
+    private List<String> expected;
 
     public String getTestName() {
         return testName;
@@ -12,11 +16,7 @@ public class HelloWorldModel {
         return thingSource;
     }
 
-    @Override
-    public String toString() {
-        return "HelloWorldModel{" +
-                "testName='" + testName + '\'' +
-                ", thingSource='" + thingSource + '\'' +
-                '}';
+    public List<String> getExpected() {
+        return expected;
     }
 }
