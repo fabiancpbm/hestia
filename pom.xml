@@ -16,6 +16,9 @@
         <test.dir>${project.basedir}/src/test/java</test.dir>
         <srcJavacc.dir>${project.basedir}/src/main/javacc</srcJavacc.dir>
         <testJavacc.dir>${project.basedir}/src/test/hestia</testJavacc.dir>
+        <resource.test>${project.basedir}/src/test/resources</resource.test>
+        <version>${project.version}</version>
+        <artifact>${project.artifactId}</artifact>
     </properties>
 
     <build>
@@ -86,6 +89,23 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>write-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>${project.build.outputDirectory}/pom.properties</outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -101,7 +121,6 @@
             <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.maven.shared/maven-invoker -->
         <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-invoker</artifactId>
