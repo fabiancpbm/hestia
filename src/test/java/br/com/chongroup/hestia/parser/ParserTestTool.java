@@ -5,10 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import org.apache.maven.shared.invoker.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,14 +34,15 @@ public class ParserTestTool {
         return parserTestMetadata;
     }
 
-    public static void runParser(ParserTestMetadata parserTestMetadata) throws MavenInvocationException {
+    public static void runParser(ParserTestMetadata parserTestMetadata) throws MavenInvocationException, IOException {
         InvocationRequest request = new DefaultInvocationRequest();
         request.setPomFile(new File(System.getProperty("user.dir") + File.separator + "pom.xml"));
-//        request.setGoals(Arrays.asList("javacc:javacc"));
-        request.setGoals(Arrays.asList("javacc:javacc", "build-helper:add-source", "assembly:single"));
+        request.setGoals(Arrays.asList("compile", "assembly:single"));
         Invoker invoker = new DefaultInvoker();
-        invoker.execute( request );
+        invoker.execute(request);
 
+        Runtime runtime = Runtime.getRuntime();
+        runtime.exec("java -jar " + System.getProperty("user.dir") + File.separator + "target/hestia-1.0-SNAPSHOT-jar-with-dependencies.jar" + " " + System.getProperty("user.dir") + File.separator + THING_PATH + File.separator + parserTestMetadata.getThingSource());
 //        request.setGoals(Arrays.asList("build-helper:add-source"));
 //        invoker = new DefaultInvoker();
 //        invoker.execute( request );
