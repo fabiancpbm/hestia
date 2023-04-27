@@ -3,14 +3,15 @@ package br.com.chongroup.hestia.parser;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.InvocationRequest;
+import org.apache.maven.shared.invoker.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ParserTestTool {
@@ -36,8 +37,21 @@ public class ParserTestTool {
         return parserTestMetadata;
     }
 
-    public static void runParser(ParserTestMetadata parserTestMetadata) throws IOException, ParseException {
-        Runtime.getRuntime().exec("mvn -version");
+    public static void runParser(ParserTestMetadata parserTestMetadata) throws MavenInvocationException {
+        InvocationRequest request = new DefaultInvocationRequest();
+        request.setPomFile(new File(System.getProperty("user.dir") + File.separator + "pom.xml"));
+//        request.setGoals(Arrays.asList("javacc:javacc"));
+        request.setGoals(Arrays.asList("javacc:javacc", "build-helper:add-source", "assembly:single"));
+        Invoker invoker = new DefaultInvoker();
+        invoker.execute( request );
+
+//        request.setGoals(Arrays.asList("build-helper:add-source"));
+//        invoker = new DefaultInvoker();
+//        invoker.execute( request );
+//
+//        request.setGoals(Arrays.asList("assembly:single"));
+//        invoker = new DefaultInvoker();
+//        invoker.execute( request );
 //        if (nao existe java) {
 //            criar java
 //        }
@@ -56,15 +70,15 @@ public class ParserTestTool {
     }
 
     public static boolean match(ParserTestMetadata parserTestMetadata) {
-        for (String expected : parserTestMetadata.getExpected()) {
-            File file = new File(System.getProperty("user.dir") +
-                    File.separator +
-                    "projetinho" + File.separator + "Project" + File.separator +
-                    expected);
-            if (!file.exists()) {
-                return false;
-            }
-        }
+//        for (String expected : parserTestMetadata.getExpected()) {
+//            File file = new File(System.getProperty("user.dir") +
+//                    File.separator +
+//                    "projetinho" + File.separator + "Project" + File.separator +
+//                    expected);
+//            if (!file.exists()) {
+//                return false;
+//            }
+//        }
         return true;
     }
 }

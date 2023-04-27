@@ -1,5 +1,6 @@
 package br.com.chongroup.hestia.parser;
 
+import org.apache.maven.shared.invoker.MavenInvocationException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -8,12 +9,8 @@ import java.io.IOException;
 
 public class ParserTest {
 
-    int count = 0;
-
-    boolean value = false;
-
     @Test
-    public void helloTestFunction() throws IOException, ParseException {
+    public void helloTestFunction() throws IOException, MavenInvocationException {
         ParserTestMetadata parserTestMetadata = ParserTestTool.readParserTestMetadata();
         ParserTestTool.runParser(parserTestMetadata);
         Assert.assertTrue(ParserTestTool.match(parserTestMetadata));
