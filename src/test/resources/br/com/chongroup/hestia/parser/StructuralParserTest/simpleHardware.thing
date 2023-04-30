@@ -1,0 +1,52 @@
+project simpleHardware {
+    microcontroller arduinoUno {
+        digitalport d01 = 1;
+        digitalport d02 = 2;
+        digitalport d03 = 3;
+        digitalport d04 = 4;
+        digitalport d05 = 5;
+        digitalport d06 = 6;
+        digitalport d07 = 7;
+        digitalport d08 = 8;
+        digitalport d09 = 9;
+        digitalport d10 = 10;
+        digitalport d11 = 11;
+        digitalport d12 = 12;
+        digitalport d13 = 13;
+        analogport a00 = A0;
+        analogport a01 = A1;
+        analogport a02 = A2;
+        analogport a03 = A3;
+        analogport a04 = A4;
+        analogport a05 = A5;
+    }
+
+    physicalresource sprinkler "Sprinkler is used to moisten the soil." {
+        topic status;
+        command on;
+        command off;
+        component valve;
+    }
+
+    topic @sprinkler.status {}
+
+    command @sprinkler.on {}
+
+    command @sprinkler.off {}
+
+    component @sprinkler.valve {
+        function open;
+        function close;
+        function status;
+        pin dataPin {
+           port _ = @arduinoUno.d13;
+           type _ = @output.digital;
+        }
+    }
+
+    function @sprinkler.valve.open {}
+
+    function @sprinkler.valve.close {}
+
+    function @sprinkler.valve.status {}
+}
