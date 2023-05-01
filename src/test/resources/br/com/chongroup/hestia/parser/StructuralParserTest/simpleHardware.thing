@@ -1,24 +1,12 @@
 project simpleHardware {
     microcontroller arduinoUno {
-        digitalport d01 = 1;
-        digitalport d02 = 2;
-        digitalport d03 = 3;
-        digitalport d04 = 4;
-        digitalport d05 = 5;
-        digitalport d06 = 6;
-        digitalport d07 = 7;
-        digitalport d08 = 8;
-        digitalport d09 = 9;
-        digitalport d10 = 10;
-        digitalport d11 = 11;
-        digitalport d12 = 12;
-        digitalport d13 = 13;
-        analogport a00 = A0;
-        analogport a01 = A1;
-        analogport a02 = A2;
-        analogport a03 = A3;
-        analogport a04 = A4;
-        analogport a05 = A5;
+        digitalport {
+            d01 = 1; d02 = 2; d03 = 3; d04 = 4; d05 = 5; d06 = 6; d07 = 7; d08 = 8; d09 = 9; d10 = 10; d11 = 11; d12 = 12; d13 = 13;
+        }
+
+        analogport {
+            a00 = A0; a01 = A1; a02 = A2; a03 = A3; a04 = A4; a05 = A5;
+        }
     }
 
     physicalresource sprinkler "Sprinkler is used to moisten the soil." {
@@ -38,7 +26,7 @@ project simpleHardware {
         function open;
         function close;
         function status;
-        pin dataPin {
+        pin actPin {
            port _ = @arduinoUno.d13;
            type _ = @output.digital;
         }
